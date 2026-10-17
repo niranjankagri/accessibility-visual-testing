@@ -28,7 +28,7 @@ export default tseslint.config(
     ...playwright.configs['flat/recommended'],
     rules: {
       ...playwright.configs['flat/recommended'].rules,
-      // Helpers that end in "Findings" or start with "expect" hold the assertions.
+      // Helper functions whose names start with "expect" count as assertions.
       'playwright/expect-expect': ['error', { assertFunctionPatterns: ['^expect.*'] }],
       'playwright/no-wait-for-timeout': 'error',
       'playwright/no-focused-test': 'error',
