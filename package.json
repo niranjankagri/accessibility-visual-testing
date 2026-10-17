@@ -1,0 +1,44 @@
+{
+  "name": "accessibility-visual-testing",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Accessibility (axe-core, keyboard, WCAG 2.2 AA) and visual regression testing with Playwright and TypeScript, proven against a build with planted defects",
+  "author": "Niranjan Kumar Agri",
+  "license": "MIT",
+  "type": "module",
+  "engines": {
+    "node": ">=24.2"
+  },
+  "scripts": {
+    "app": "node app/server.ts --port 4310",
+    "app:regressed": "node app/server.ts --port 4311 --variant regressed",
+    "test": "playwright test",
+    "test:a11y": "playwright test --project=a11y-chromium --project=a11y-firefox",
+    "test:visual": "playwright test --project=visual",
+    "test:defects": "playwright test --project=defects",
+    "test:unit": "node --test app/*.test.ts tests/unit/*.test.ts",
+    "docker": "node scripts/docker.ts",
+    "visual:docker": "node scripts/docker.ts --project=visual",
+    "visual:update": "node scripts/docker.ts --project=visual --update-snapshots=all",
+    "a11y:summary": "node scripts/a11y-summary.ts",
+    "report": "playwright show-report",
+    "typecheck": "tsc -p tsconfig.json",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "check": "npm run typecheck && npm run lint && npm run format:check"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "4.13.0",
+    "@eslint/js": "10.0.1",
+    "@playwright/test": "1.64.0",
+    "@types/node": "26.6.5",
+    "eslint": "10.12.0",
+    "eslint-config-prettier": "10.1.8",
+    "eslint-plugin-playwright": "2.12.1",
+    "playwright-core": "1.64.0",
+    "prettier": "3.9.9",
+    "typescript": "6.0.3",
+    "typescript-eslint": "8.71.1"
+  }
+}

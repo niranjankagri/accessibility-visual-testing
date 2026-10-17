@@ -1,0 +1,9 @@
+node_modules/
+playwright-report/
+test-results/
+reports/
+package-lock.json
+# The page templates contain {{placeholders}} inside tags, which an HTML formatter would break.
+app/web/*.html
+# Screenshots and their folders
+tests/visual/__screenshots__/

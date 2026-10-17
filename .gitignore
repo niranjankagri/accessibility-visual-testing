@@ -1,0 +1,13 @@
+# Dependencies
+node_modules/
+
+# Playwright output: HTML report, traces, screenshots of failures
+playwright-report/
+test-results/
+
+# Accessibility scan records collected during a run (see scripts/a11y-summary.ts)
+reports/
+
+# IDE settings
+.idea/
+.vscode/
