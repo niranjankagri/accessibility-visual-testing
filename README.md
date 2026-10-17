@@ -132,13 +132,27 @@ tests/
   a11y/                   axe.spec.ts, keyboard.spec.ts, layout.spec.ts
   visual/                 pages.spec.ts, states.spec.ts and __screenshots__/ (the approved baselines)
   defects/defects.spec.ts each planted defect, the check that must catch it and the finding it must report
-  support/                axe scan + exceptions, keyboard checks, site pages, screenshot helper
+  pages/                  page objects: BasePage, HomePage, BookingPage, AppointmentsPage, AccessibilityPage,
+                          the CancelDialog component, and ALL_PAGES for the checks that run on every page
+  data/visits.ts          booking details (Visit) with named sample visits
+  support/                axe scan + exceptions, keyboard checks, screenshot helper
   unit/                   exception rules (node:test)
 scripts/
   docker.ts               runs Playwright in the Linux image with the repo mounted
   a11y-summary.ts         Markdown summary of the scans (also the CI job summary)
 a11y-exceptions.json      known issues: ticket, reason, expiry
 ```
+
+## Design
+
+| Pattern             | Where                                                                               | Why                                                                                                                |
+| ------------------- | ----------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| Page Object Model   | `tests/pages`: one class per page, extending `BasePage`                             | locators live in one place; specs only call page methods and assert                                                |
+| Component object    | `CancelDialog`                                                                      | the modal dialog is modelled once, used by the axe, keyboard, visual and defects specs                             |
+| Accessible locators | `getByRole` and `getByLabel` inside the page objects                                | a missing name or label breaks the locator, so every UI test is also a small accessibility check                   |
+| Registry            | `ALL_PAGES` (name + factory)                                                        | the checks that run on every page loop over one list; adding a page adds it to all of them                         |
+| Test data object    | `Visit`, `NURSE_BY_VIDEO`, `PHYSIO_IN_PERSON`                                       | what is booked, instead of six fields filled in each spec                                                          |
+| Check functions     | `tests/support`: axe `scan`, `tabThrough`, `dialogFindings`, `errorSummaryFindings` | return findings instead of asserting, so the same check proves the good build passes and the regressed build fails |
 
 ## CI
 

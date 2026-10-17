@@ -76,7 +76,7 @@ text content or `alt`, in that order of precedence. A button with only an icon a
 A test written that way fails when the name disappears, so every UI test becomes a small accessibility check, and
 it does not break when a CSS class changes.
 
-**In the project:** the tests use `getByRole` and `getByLabel` throughout ([keyboard.spec.ts](../tests/a11y/keyboard.spec.ts)).
+**In the project:** the page objects use `getByRole` and `getByLabel` throughout ([booking-page.ts](../tests/pages/booking-page.ts)).
 
 ### Q8. What is a landmark, and why do landmarks matter?
 
@@ -384,7 +384,7 @@ change) and take separate screenshots.
 A 1280 px window at 400% zoom is 320 CSS px wide, so test with a 320 px viewport: the page must not scroll
 horizontally (WCAG 1.4.10). Data tables, maps and diagrams may scroll in their own region.
 
-**In the project:** `scrollWidth - clientWidth` must be 0 on every page ([layout.spec.ts](../tests/a11y/layout.spec.ts)).
+**In the project:** `scrollWidth - clientWidth` (`BasePage.horizontalOverflow`) must be 0 on every page ([layout.spec.ts](../tests/a11y/layout.spec.ts)).
 
 ### Q48. What did the reflow test find?
 

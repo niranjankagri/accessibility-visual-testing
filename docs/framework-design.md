@@ -15,6 +15,7 @@ Why the project is built the way it is. The README says what it does and how to 
 | Part                               | Role                                                                                | Tools                                               |
 | ---------------------------------- | ----------------------------------------------------------------------------------- | --------------------------------------------------- |
 | `app/`                             | CityCare Clinic, the app under test; `--variant regressed` applies `app/defects.ts` | Node 24 (runs TypeScript directly), no dependencies |
+| `tests/pages`, `tests/data`        | page objects (one per page, `CancelDialog` component) and booking data              | Playwright locators (`getByRole`, `getByLabel`)     |
 | `tests/a11y`                       | axe scans, keyboard and focus checks, layout checks                                 | Playwright 1.64, @axe-core/playwright 4.13          |
 | `tests/visual`                     | screenshot comparison against approved baselines                                    | Playwright `toHaveScreenshot`                       |
 | `tests/defects`                    | the same checks against the regressed build                                         | Playwright                                          |
