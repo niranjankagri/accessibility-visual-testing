@@ -1,0 +1,87 @@
+# Continuous integration: static checks and unit tests first, then the accessibility suite in two browsers,
+# and the screenshot comparisons plus the planted-defect checks inside the Playwright Linux image.
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+# A newer push to the same branch cancels the run that is still going.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  checks:
+    name: Typecheck, lint, format, unit tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm run check
+      - run: npm run test:unit
+
+  a11y:
+    name: Accessibility (${{ matrix.browser }})
+    needs: checks
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        browser: [chromium, firefox]
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps ${{ matrix.browser }}
+      - name: axe, keyboard and layout tests
+        run: npx playwright test --project=a11y-${{ matrix.browser }}
+      - name: Scan summary
+        if: ${{ !cancelled() }}
+        run: npm run a11y:summary
+      - uses: actions/upload-artifact@v7
+        if: ${{ !cancelled() }}
+        with:
+          name: report-a11y-${{ matrix.browser }}
+          path: playwright-report
+          retention-days: 7
+
+  visual:
+    name: Visual comparison + planted defects
+    needs: checks
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    # The same image that rendered the baselines (scripts/docker.ts): same browser build, same fonts.
+    # Keep its version equal to @playwright/test in package.json.
+    container:
+      image: mcr.microsoft.com/playwright:v1.64.0-noble
+      options: --ipc=host
+    steps:
+      - uses: actions/checkout@v7
+      - run: npm ci
+      - name: Screenshots against baselines, then every planted defect must be caught
+        run: npx playwright test --project=visual --project=defects
+      - name: Scan summary
+        if: ${{ !cancelled() }}
+        run: npm run a11y:summary
+      # On a failure the report holds expected, actual and diff images for each changed screenshot.
+      - uses: actions/upload-artifact@v7
+        if: ${{ !cancelled() }}
+        with:
+          name: report-visual
+          path: playwright-report
+          retention-days: 7
