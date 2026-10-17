@@ -1,0 +1,61 @@
+      <h1 id="page-title" tabindex="-1">My appointments</h1>
+      <p class="status" id="status" role="status"></p>
+
+      <div class="table-scroll" role="region" aria-labelledby="appointments-caption" tabindex="0">
+        <table class="appointments">
+          <caption id="appointments-caption">Your upcoming appointments</caption>
+          <thead>
+            <tr>
+              <th scope="col">Date</th>
+              <th scope="col">Service</th>
+              <th scope="col">Clinician</th>
+              <th scope="col">Type</th>
+              <th scope="col"><span class="visually-hidden">Actions</span></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr data-date="12 November">
+              <td>Thu 12 November, 09:30</td>
+              <td>Family doctor</td>
+              <td>Dr. Amira Lee</td>
+              <td>In person</td>
+              <td>
+                <button class="button button-secondary" type="button" data-cancel>
+                  Cancel<span class="visually-hidden"> appointment on 12 November</span>
+                </button>
+              </td>
+            </tr>
+            <tr data-date="19 November">
+              <td>Thu 19 November, 14:00</td>
+              <td>Physiotherapy</td>
+              <td>Jonas Berg</td>
+              <td>In person</td>
+              <td>
+                <button class="button button-secondary" type="button" data-cancel>
+                  Cancel<span class="visually-hidden"> appointment on 19 November</span>
+                </button>
+              </td>
+            </tr>
+            <tr data-date="3 December">
+              <td>Thu 3 December, 11:15</td>
+              <td>Nurse</td>
+              <td>Sara Okafor</td>
+              <td>Video call</td>
+              <td>
+                <button class="button button-secondary" type="button" data-cancel>
+                  Cancel<span class="visually-hidden"> appointment on 3 December</span>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <dialog id="cancel-dialog" aria-labelledby="cancel-title" aria-describedby="cancel-text">
+        <h2 id="cancel-title">Cancel this appointment?</h2>
+        <p id="cancel-text">You are about to cancel your appointment on <span id="cancel-date"></span>.</p>
+        <div class="dialog-actions">
+          <button class="button button-secondary" type="button" id="keep">Keep appointment</button>
+          <button class="button button-danger" type="button" id="confirm-cancel">Cancel appointment</button>
+        </div>
+      </dialog>

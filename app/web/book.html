@@ -1,0 +1,75 @@
+      <h1 id="page-title" tabindex="-1">Book a visit</h1>
+      <p>All fields are required unless marked optional.</p>
+
+      <div class="error-summary" id="error-summary" tabindex="-1" hidden>
+        <h2>There is a problem</h2>
+        <ul id="error-list"></ul>
+      </div>
+
+      <div class="confirmation" id="confirmation" tabindex="-1" hidden>
+        <h2>Visit booked</h2>
+        <p>Your reference number is <strong id="reference"></strong>. We have sent the details to your email.</p>
+      </div>
+
+      <form id="booking-form" novalidate>
+        <div class="field" id="name-field">
+          <label for="name">Full name</label>
+          <p class="error-message" id="name-error" hidden></p>
+          <input id="name" name="name" type="text" autocomplete="name" />
+        </div>
+
+        <div class="field" id="email-field">
+          <label for="email">Email address</label>
+          <p class="hint" id="email-hint">We send the confirmation to this address.</p>
+          <p class="error-message" id="email-error" hidden></p>
+          <input id="email" name="email" type="email" autocomplete="email" aria-describedby="email-hint" />
+        </div>
+
+        <div class="field" id="service-field">
+          <label for="service">Service</label>
+          <p class="error-message" id="service-error" hidden></p>
+          <select id="service" name="service">
+            <option value="">Choose a service</option>
+            <option value="doctor">Family doctor</option>
+            <option value="nurse">Nurse</option>
+            <option value="physio">Physiotherapy</option>
+          </select>
+        </div>
+
+        <div class="field" id="date-field">
+          <label for="date">Preferred date</label>
+          <p class="hint" id="date-hint">For example, 24 November. Weekdays only.</p>
+          <p class="error-message" id="date-error" hidden></p>
+          <input id="date" name="date" type="date" aria-describedby="date-hint" />
+        </div>
+
+        <div class="field" id="visit-field">
+          <fieldset>
+            <legend>Type of visit</legend>
+            <p class="error-message" id="visit-error" hidden></p>
+            <div class="choice">
+              <input id="visit-person" name="visit" type="radio" value="person" />
+              <label for="visit-person">In person</label>
+            </div>
+            <div class="choice">
+              <input id="visit-video" name="visit" type="radio" value="video" />
+              <label for="visit-video">Video call</label>
+            </div>
+          </fieldset>
+        </div>
+
+        <div class="field">
+          <label for="notes">Anything we should know? (optional)</label>
+          <textarea id="notes" name="notes" rows="3"></textarea>
+        </div>
+
+        <div class="field" id="consent-field">
+          <p class="error-message" id="consent-error" hidden></p>
+          <div class="choice">
+            <input id="consent" name="consent" type="checkbox" />
+            <label for="consent">I agree that CityCare stores my details to manage this visit.</label>
+          </div>
+        </div>
+
+        <button class="button button-primary" type="submit">Book visit</button>
+      </form>

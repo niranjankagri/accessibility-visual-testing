@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{{title}} | CityCare Clinic</title>
+    <link rel="stylesheet" href="/assets/styles.css" />
+    <script src="/assets/app.js" defer></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to main content</a>
+    <header class="site-header">
+      <a class="brand" href="/"><img src="/assets/logo.svg" alt="" width="32" height="32" />CityCare Clinic</a>
+      <nav aria-label="Main">
+        <ul>
+          <li><a href="/"{{current:/}}>Home</a></li>
+          <li><a href="/book"{{current:/book}}>Book a visit</a></li>
+          <li><a href="/appointments"{{current:/appointments}}>My appointments</a></li>
+        </ul>
+      </nav>
+      <p class="today">Today: <time id="today"></time></p>
+    </header>
+    <main id="main" tabindex="-1">
+{{content}}
+    </main>
+    <footer class="site-footer">
+      <p>CityCare Clinic is a fictional demo app for accessibility and visual testing.</p>
+      <p><a href="/accessibility">Accessibility statement</a></p>
+    </footer>
+    <!-- Third-party chat badge: its colours come from the vendor (see a11y-exceptions.json). -->
+    <aside class="vendor-chat" aria-label="Chat">
+      <button type="button">Chat with us</button>
+    </aside>
+  </body>
+</html>
