@@ -2,7 +2,10 @@
  * The states a page screenshot never shows: errors, confirmation, an open dialog, focus and hover.
  */
 import { expect, test } from '@playwright/test';
-import { openPage, sitePage } from '../support/site.ts';
+import { NURSE_BY_VIDEO } from '../data/visits.ts';
+import { AppointmentsPage } from '../pages/appointments-page.ts';
+import { BookingPage } from '../pages/booking-page.ts';
+import { HomePage } from '../pages/home-page.ts';
 import { VIEWPORTS, expectPageScreenshot, onlyWhereBaselinesAreRendered } from '../support/visual.ts';
 
 onlyWhereBaselinesAreRendered();
@@ -10,35 +13,28 @@ onlyWhereBaselinesAreRendered();
 test.use({ viewport: VIEWPORTS.desktop });
 
 test('booking form with every error shown', async ({ page }) => {
-  await openPage(page, sitePage('book'));
-  await page.getByRole('button', { name: 'Book visit' }).click();
-  await expect(page.locator('#error-summary')).toBeFocused();
+  const booking = await new BookingPage(page).open();
+  await booking.submitEmpty();
+  await expect(booking.errorSummary).toBeFocused();
   await expectPageScreenshot(page, 'book-errors');
 });
 
 test('booking confirmation, with the random reference number masked', async ({ page }) => {
-  await openPage(page, sitePage('book'));
-  await page.getByLabel('Full name').fill('Mia Wagner');
-  await page.getByLabel('Email address').fill('mia@example.com');
-  await page.getByLabel('Service').selectOption('Nurse');
-  await page.getByLabel('Preferred date').fill('2026-11-04');
-  await page.getByLabel('Video call').check();
-  await page.getByLabel('I agree').check();
-  await page.getByRole('button', { name: 'Book visit' }).click();
-  await expect(page.locator('#confirmation')).toBeFocused();
-  await expectPageScreenshot(page, 'book-confirmation', { mask: [page.locator('#reference')] });
+  const booking = await new BookingPage(page).open();
+  await booking.book(NURSE_BY_VIDEO);
+  await expect(booking.confirmation).toBeFocused();
+  await expectPageScreenshot(page, 'book-confirmation', { mask: [booking.reference] });
 });
 
 test('cancel dialog open over the appointments', async ({ page }) => {
-  await openPage(page, sitePage('appointments'));
-  await page.getByRole('button', { name: 'Cancel appointment on 19 November' }).click();
-  await expect(page.getByRole('dialog')).toBeVisible();
+  const appointments = await new AppointmentsPage(page).open();
+  await appointments.openCancelDialog('19 November');
   await expect(page).toHaveScreenshot('appointments-dialog.png');
 });
 
 test('focus ring on the main button', async ({ page }) => {
-  await openPage(page, sitePage('home'));
-  const button = page.getByRole('link', { name: 'Book a visit' }).last();
+  const home = await new HomePage(page).open();
+  const button = home.bookVisitButton;
   await button.focus(); // a script focus still counts as keyboard focus for :focus-visible on links
   await expect(button).toBeFocused();
   // An element screenshot with a margin, so the ring around the button is in the picture.
@@ -50,8 +46,8 @@ test('focus ring on the main button', async ({ page }) => {
 });
 
 test('secondary button on hover', async ({ page }) => {
-  await openPage(page, sitePage('appointments'));
-  const button = page.getByRole('button', { name: 'Cancel appointment on 12 November' });
+  const appointments = await new AppointmentsPage(page).open();
+  const button = appointments.cancelButton('12 November');
   await button.hover();
   await expect(button).toHaveScreenshot('button-secondary-hover.png');
 });

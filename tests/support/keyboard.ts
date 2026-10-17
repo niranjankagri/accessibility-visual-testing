@@ -5,6 +5,7 @@
  * prove the good build passes (tests/a11y) and the regressed build fails (tests/defects).
  */
 import type { Locator, Page } from '@playwright/test';
+import type { BookingPage } from '../pages/booking-page.ts';
 
 /** The element that has keyboard focus, as a keyboard user would meet it. */
 export interface TabStop {
@@ -125,21 +126,20 @@ export async function dialogFindings(page: Page, opener: Locator, dialog: Locato
  * Submits the booking form empty with the keyboard and checks the error handling a screen reader user
  * depends on (WCAG 3.3.1 Error Identification, 4.1.2 Name, Role, Value).
  */
-export async function errorSummaryFindings(page: Page): Promise<string[]> {
+export async function errorSummaryFindings(booking: BookingPage): Promise<string[]> {
   const findings: string[] = [];
-  await page.getByRole('button', { name: 'Book visit' }).focus();
-  await page.keyboard.press('Enter');
+  await booking.submitWithKeyboard();
 
-  const summary = page.locator('#error-summary');
+  const summary = booking.errorSummary;
   if (!(await summary.isVisible())) return ['no error summary after submitting an empty form'];
   const summaryFocused = await summary.evaluate((element) => element === document.activeElement);
   if (!summaryFocused) findings.push('focus is not on the error summary after a failed submit');
 
   // Every invalid field must point (aria-describedby) to a visible error message.
-  for (const input of await page.locator('[aria-invalid="true"]').all()) {
+  for (const input of await booking.invalidFields.all()) {
     const ids = ((await input.getAttribute('aria-describedby')) ?? '').split(' ').filter(Boolean);
     let linked = false;
-    for (const id of ids) linked ||= await page.locator(`[id="${id}"].error-message`).isVisible();
+    for (const id of ids) linked ||= await booking.errorMessage(id).isVisible();
     if (!linked) {
       findings.push(`#${await input.getAttribute('id')} is invalid but no visible error message is linked to it`);
     }

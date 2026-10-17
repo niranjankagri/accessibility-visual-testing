@@ -7,8 +7,11 @@
 import { expect, test, type Page, type TestInfo } from '@playwright/test';
 import { DEFECTS } from '../../app/defects.ts';
 import { scan } from '../support/axe.ts';
+import { AppointmentsPage } from '../pages/appointments-page.ts';
+import { BookingPage } from '../pages/booking-page.ts';
+import { HomePage } from '../pages/home-page.ts';
+import { ALL_PAGES } from '../pages/site.ts';
 import { dialogFindings, errorSummaryFindings, focusIndicatorFindings, tabThrough } from '../support/keyboard.ts';
-import { openPage, sitePage } from '../support/site.ts';
 import { VIEWPORTS, expectPageScreenshot } from '../support/visual.ts';
 
 interface Detection {
@@ -20,7 +23,9 @@ interface Detection {
 }
 
 async function axeFindings(page: Page, testInfo: TestInfo, name: string): Promise<string[]> {
-  await openPage(page, sitePage(name));
+  const sitePage = ALL_PAGES.find((p) => p.name === name);
+  if (!sitePage) throw new Error(`No page called ${name}`);
+  await sitePage.create(page).open();
   const result = await scan(page, testInfo, { label: `${name} regressed` });
   return result.blocking.map((b) => b.message);
 }
@@ -44,7 +49,7 @@ const DETECTIONS: Record<string, Detection> = {
   'focus-outline-removed': {
     check: 'focus indicator on every tab stop',
     run: async (page) => {
-      await openPage(page, sitePage('home'));
+      await new HomePage(page).open();
       return focusIndicatorFindings(await tabThrough(page));
     },
     finding: /^no visible focus on a "Skip to main content"/,
@@ -52,7 +57,7 @@ const DETECTIONS: Record<string, Detection> = {
   'tab-order-changed': {
     check: 'tab order of the home page',
     run: async (page) => {
-      await openPage(page, sitePage('home'));
+      await new HomePage(page).open();
       const stops = await tabThrough(page);
       return [`first stop: ${stops[0]?.name}`];
     },
@@ -60,21 +65,14 @@ const DETECTIONS: Record<string, Detection> = {
   },
   'error-summary-not-focused': {
     check: 'error handling of the booking form',
-    run: async (page) => {
-      await openPage(page, sitePage('book'));
-      return errorSummaryFindings(page);
-    },
+    run: async (page) => errorSummaryFindings(await new BookingPage(page).open()),
     finding: /^focus is not on the error summary/,
   },
   'dialog-not-modal': {
     check: 'keyboard behaviour of the cancel dialog',
     run: async (page) => {
-      await openPage(page, sitePage('appointments'));
-      return dialogFindings(
-        page,
-        page.getByRole('button', { name: 'Cancel appointment on 19 November' }),
-        page.getByRole('dialog', { name: 'Cancel this appointment?' }),
-      );
+      const appointments = await new AppointmentsPage(page).open();
+      return dialogFindings(page, appointments.cancelButton('19 November'), appointments.cancelDialog.root);
     },
     finding: /^Tab moved focus out of the dialog/,
   },
@@ -83,7 +81,7 @@ const DETECTIONS: Record<string, Detection> = {
     run: async (page) => {
       test.skip(process.platform !== 'linux', 'Visual baselines are rendered on Linux: run npm run docker');
       await page.setViewportSize(VIEWPORTS.desktop);
-      await openPage(page, sitePage('home'));
+      await new HomePage(page).open();
       // The comparison must fail; its expected, actual and diff images are attached to this test's report.
       const error = await expectPageScreenshot(page, 'home-desktop-light').then(
         () => null,

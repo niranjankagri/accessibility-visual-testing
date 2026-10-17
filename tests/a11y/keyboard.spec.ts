@@ -2,6 +2,11 @@
  * Keyboard-only use: everything reachable, in a sensible order, always visible, never trapped.
  */
 import { expect, test } from '@playwright/test';
+import { PHYSIO_IN_PERSON } from '../data/visits.ts';
+import { AppointmentsPage } from '../pages/appointments-page.ts';
+import { BookingPage } from '../pages/booking-page.ts';
+import { HomePage } from '../pages/home-page.ts';
+import { ALL_PAGES } from '../pages/site.ts';
 import {
   dialogFindings,
   errorSummaryFindings,
@@ -10,7 +15,6 @@ import {
   tabOrderFindings,
   tabThrough,
 } from '../support/keyboard.ts';
-import { PAGES, openPage, sitePage } from '../support/site.ts';
 
 /** The tab stops every page starts with: skip link, logo link, navigation. */
 const HEADER_STOPS = ['Skip to main content', 'CityCare Clinic', 'Home', 'Book a visit', 'My appointments'];
@@ -18,14 +22,14 @@ const HEADER_STOPS = ['Skip to main content', 'CityCare Clinic', 'Home', 'Book a
 const FOOTER_STOPS = ['Accessibility statement', 'Chat with us'];
 
 test('home page tab order follows the visual order', async ({ page }) => {
-  await openPage(page, sitePage('home'));
+  await new HomePage(page).open();
   const stops = await tabThrough(page);
   expect(tabOrderFindings(stops, [...HEADER_STOPS, 'Book a visit', ...FOOTER_STOPS])).toEqual([]);
 });
 
-for (const sitePg of PAGES) {
-  test(`${sitePg.name} page shows where focus is on every tab stop`, async ({ page }) => {
-    await openPage(page, sitePg);
+for (const sitePage of ALL_PAGES) {
+  test(`${sitePage.name} page shows where focus is on every tab stop`, async ({ page }) => {
+    await sitePage.create(page).open();
     const stops = await tabThrough(page);
     expect(stops.length).toBeGreaterThanOrEqual(HEADER_STOPS.length + FOOTER_STOPS.length);
     expect(focusIndicatorFindings(stops)).toEqual([]);
@@ -33,25 +37,23 @@ for (const sitePg of PAGES) {
 }
 
 test('skip link is the first stop, becomes visible and jumps to the main content', async ({ page }) => {
-  await openPage(page, sitePage('book'));
+  const booking = await new BookingPage(page).open();
   await page.keyboard.press('Tab');
-  const skipLink = page.getByRole('link', { name: 'Skip to main content' });
-  await expect(skipLink).toBeFocused();
-  await expect(skipLink).toBeInViewport();
+  await expect(booking.skipLink).toBeFocused();
+  await expect(booking.skipLink).toBeInViewport();
 
   await page.keyboard.press('Enter');
-  await expect(page.locator('main')).toBeFocused();
+  await expect(booking.main).toBeFocused();
   // The next Tab continues inside the main content, not in the header.
   await page.keyboard.press('Tab');
   expect((await focused(page))?.name).toBe('Full name');
 });
 
 test('failed booking moves focus to the error summary and links each error to its field', async ({ page }) => {
-  await openPage(page, sitePage('book'));
-  expect(await errorSummaryFindings(page)).toEqual([]);
+  const booking = await new BookingPage(page).open();
+  expect(await errorSummaryFindings(booking)).toEqual([]);
 
-  const summary = page.locator('#error-summary');
-  await expect(summary.getByRole('link')).toHaveText([
+  await expect(booking.errorLinks).toHaveText([
     'Enter your full name',
     'Enter your email address',
     'Choose a service',
@@ -62,45 +64,30 @@ test('failed booking moves focus to the error summary and links each error to it
   await expect(page).toHaveTitle(/^Error: Book a visit/);
 
   // Following an error link puts the cursor in the field, ready to type.
-  await summary.getByRole('link', { name: 'Choose a service' }).press('Enter');
-  await expect(page.getByLabel('Service')).toBeFocused();
+  await booking.followErrorLink('Choose a service');
+  await expect(booking.service).toBeFocused();
 });
 
 test('booking form can be completed with the keyboard alone', async ({ page }) => {
-  await openPage(page, sitePage('book'));
-  await page.getByLabel('Full name').focus();
-  await page.keyboard.type('Mia Wagner');
-  await page.keyboard.press('Tab');
-  await page.keyboard.type('mia@example.com');
-  await page.keyboard.press('Tab');
-  await page.getByLabel('Service').selectOption('Physiotherapy'); // a native select: arrow keys work, typing varies by browser
-  await page.getByLabel('Preferred date').fill('2026-11-04');
-  await page.getByLabel('In person').focus();
-  await page.keyboard.press('Space');
-  await page.getByLabel('I agree').focus();
-  await page.keyboard.press('Space');
-  await page.getByRole('button', { name: 'Book visit' }).focus();
-  await page.keyboard.press('Enter');
+  const booking = await new BookingPage(page).open();
+  await booking.bookWithKeyboard(PHYSIO_IN_PERSON);
 
-  const confirmation = page.locator('#confirmation');
-  await expect(confirmation).toBeFocused();
-  await expect(confirmation).toContainText(/Your reference number is CC-\d{6}/);
+  await expect(booking.confirmation).toBeFocused();
+  await expect(booking.confirmation).toContainText(/Your reference number is CC-\d{6}/);
 });
 
 test('cancel dialog keeps focus inside, closes with Escape and returns focus', async ({ page }) => {
-  await openPage(page, sitePage('appointments'));
-  const opener = page.getByRole('button', { name: 'Cancel appointment on 19 November' });
-  const dialog = page.getByRole('dialog', { name: 'Cancel this appointment?' });
-  expect(await dialogFindings(page, opener, dialog)).toEqual([]);
+  const appointments = await new AppointmentsPage(page).open();
+  const findings = await dialogFindings(page, appointments.cancelButton('19 November'), appointments.cancelDialog.root);
+  expect(findings).toEqual([]);
 });
 
 test('cancelling an appointment announces it and moves focus to the page heading', async ({ page }) => {
-  await openPage(page, sitePage('appointments'));
-  await page.getByRole('button', { name: 'Cancel appointment on 12 November' }).press('Enter');
-  await page.getByRole('button', { name: 'Cancel appointment', exact: true }).press('Enter');
+  const appointments = await new AppointmentsPage(page).open();
+  await appointments.cancelWithKeyboard('12 November');
 
   // role="status": a screen reader reads the message without moving the user's focus there.
-  await expect(page.getByRole('status')).toHaveText('Your appointment on 12 November is cancelled.');
-  await expect(page.getByRole('heading', { level: 1 })).toBeFocused();
-  await expect(page.getByRole('button', { name: /Cancel appointment on/ })).toHaveCount(2);
+  await expect(appointments.status).toHaveText('Your appointment on 12 November is cancelled.');
+  await expect(appointments.mainHeading).toBeFocused();
+  await expect(appointments.cancelButtons).toHaveCount(2);
 });
