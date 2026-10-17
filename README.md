@@ -104,7 +104,7 @@ to Docker.
 Needs Node 24.2 or later. Docker Desktop for the visual tests.
 
 ```
-cd /d D:\Data\Work\accessibility-visual-testing
+cd /d D:\Data\Work\portfolio-projects\accessibility-visual-testing
 npm ci
 npx playwright install chromium firefox
 
