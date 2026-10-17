@@ -1,0 +1,9 @@
+[
+  {
+    "rule": "color-contrast",
+    "target": ".vendor-chat > button",
+    "ticket": "A11Y-12",
+    "reason": "Third-party chat badge; we cannot change its colours. The vendor has promised a fix in their next major release. Listed in the accessibility statement.",
+    "expires": "2027-03-31"
+  }
+]
