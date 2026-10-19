@@ -70,6 +70,10 @@ export async function handle(path: string, variant: Variant): Promise<Response> 
   return renderPage(path, variant);
 }
 
+/**
+ * Creates the server for one variant: "clean" serves the site as written, "regressed" applies the planted defects.
+ * Only GET and HEAD are allowed (405 otherwise); an unexpected error is answered with a plain 500.
+ */
 export function createApp(variant: Variant): Server {
   return createServer((request, response) => {
     const path = new URL(request.url ?? '/', 'http://localhost').pathname;

@@ -4,6 +4,7 @@
 import type { Locator } from '@playwright/test';
 import { BasePage } from './base-page.ts';
 
+/** Page object of the home page. */
 export class HomePage extends BasePage {
   readonly path = '/';
   readonly heading = 'Care close to home';

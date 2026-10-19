@@ -5,10 +5,12 @@ import { expect, type Locator } from '@playwright/test';
 import { BasePage } from './base-page.ts';
 import { CancelDialog } from './cancel-dialog.ts';
 
+/** Page object of /appointments: the visits table and the cancel dialog. */
 export class AppointmentsPage extends BasePage {
   readonly path = '/appointments';
   readonly heading = 'My appointments';
 
+  /** The cancel dialog component (it exists in the page while closed). */
   get cancelDialog(): CancelDialog {
     return new CancelDialog(this.page);
   }

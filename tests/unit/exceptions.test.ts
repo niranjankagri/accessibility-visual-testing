@@ -19,6 +19,7 @@ const chatContrast: A11yException = {
   expires: '2027-03-31',
 };
 
+/** An axe finding with only the rule and the target set; the other fields are fixed. */
 function finding(rule: string, target: string): Finding {
   return { rule, impact: 'serious', target, help: 'Help text', helpUrl: 'https://example.test' };
 }

@@ -22,6 +22,7 @@ interface Detection {
   finding: RegExp;
 }
 
+/** Opens one page of the regressed build and returns the messages of axe's blocking findings. */
 async function axeFindings(page: Page, testInfo: TestInfo, name: string): Promise<string[]> {
   const sitePage = ALL_PAGES.find((p) => p.name === name);
   if (!sitePage) throw new Error(`No page called ${name}`);

@@ -6,22 +6,27 @@ import { expect, type Locator } from '@playwright/test';
 import type { Visit } from '../data/visits.ts';
 import { BasePage } from './base-page.ts';
 
+/** Page object of /book: the form, its error summary and the confirmation. */
 export class BookingPage extends BasePage {
   readonly path = '/book';
   readonly heading = 'Book a visit';
 
+  /** The name field, by its label. */
   get fullName(): Locator {
     return this.page.getByLabel('Full name');
   }
 
+  /** The email field, by its label. */
   get email(): Locator {
     return this.page.getByLabel('Email address');
   }
 
+  /** The service drop-down, by its label. */
   get service(): Locator {
     return this.page.getByLabel('Service');
   }
 
+  /** The date field, by its label. */
   get date(): Locator {
     return this.page.getByLabel('Preferred date');
   }
@@ -31,10 +36,12 @@ export class BookingPage extends BasePage {
     return this.page.getByLabel(label);
   }
 
+  /** The consent checkbox, by its label. */
   get consent(): Locator {
     return this.page.getByLabel('I agree');
   }
 
+  /** The submit button, by its role and name. */
   get submitButton(): Locator {
     return this.page.getByRole('button', { name: 'Book visit' });
   }

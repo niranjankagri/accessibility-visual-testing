@@ -16,6 +16,7 @@ export abstract class BasePage {
   /** Its main heading (h1), which shows the page has rendered. */
   abstract readonly heading: string;
 
+  /** Page objects are created through ALL_PAGES or by the test fixtures. */
   constructor(page: Page) {
     this.page = page;
   }

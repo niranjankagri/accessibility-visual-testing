@@ -71,6 +71,10 @@ function setFieldError(fieldName, message) {
   }
 }
 
+/**
+ * Booking form: on a failed submit, list every error in the summary box, mark each field invalid with its message,
+ * and move focus to the summary; links in the summary jump to their field.
+ */
 function setUpBooking() {
   const form = document.getElementById('booking-form');
   if (!form) return;
@@ -121,6 +125,10 @@ function setUpBooking() {
   });
 }
 
+/**
+ * Cancel dialog: opens as a modal from each appointment's button, returns focus to that button when it closes, and
+ * announces the result in the status region.
+ */
 function setUpAppointments() {
   const dialog = document.getElementById('cancel-dialog');
   if (!dialog) return;
