@@ -60,6 +60,17 @@ jobs:
           path: playwright-report
           retention-days: 7
 
+      # JUnit XML only, as its own artifact: the CI results collection of
+      # automation-coverage-quality-intelligence imports it (config/producers.toml there)
+      - name: Keep the JUnit results
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: junit-a11y-${{ matrix.browser }}
+          path: test-results/junit.xml
+          if-no-files-found: warn
+          retention-days: 30
+
   visual:
     name: Visual comparison + planted defects
     needs: checks
@@ -85,3 +96,14 @@ jobs:
           name: report-visual
           path: playwright-report
           retention-days: 7
+
+      # JUnit XML only, as its own artifact: the CI results collection of
+      # automation-coverage-quality-intelligence imports it (config/producers.toml there)
+      - name: Keep the JUnit results
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: junit-visual
+          path: test-results/junit.xml
+          if-no-files-found: warn
+          retention-days: 30

@@ -11,7 +11,10 @@ export default defineConfig({
   forbidOnly: !!process.env.CI,
   // No retries: a check that passes only on a second try is a flaky check, and should be fixed, not hidden.
   retries: 0,
-  reporter: [['list'], ['html', { open: 'never' }]],
+  // On CI also JUnit XML, which the CI results collection of automation-coverage-quality-intelligence imports
+  reporter: process.env.CI
+    ? [['list'], ['html', { open: 'never' }], ['junit', { outputFile: 'test-results/junit.xml' }]]
+    : [['list'], ['html', { open: 'never' }]],
   globalSetup: './tests/support/global-setup.ts',
 
   // One folder of approved screenshots, shared by the visual and the defects project. No browser or
