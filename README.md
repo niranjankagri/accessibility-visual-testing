@@ -159,7 +159,10 @@ a11y-exceptions.json      known issues: ticket, reason, expiry
 [`.github/workflows/ci.yml`](.github/workflows/ci.yml): typecheck, lint, format and unit tests first; then the
 accessibility suite in Chromium and Firefox, and the screenshot comparisons plus the defects project inside the
 Playwright image. Each job writes the scan summary into the job summary and uploads the HTML report, which holds the
-expected, actual and diff images when a screenshot changed.
+expected, actual and diff images when a screenshot changed. The JUnit XML goes into its own artifacts
+(`junit-a11y-chromium`, `junit-a11y-firefox`, `junit-visual`), which [Automation Coverage & Quality Intelligence](https://github.com/niranjankagri/automation-coverage-quality-intelligence) collects.
+
+`main` is protected by a ruleset: every change goes through a pull request, and the CI jobs above must pass before it is merged.
 
 ## What automation does not replace
 
@@ -171,4 +174,4 @@ messages make sense, and testing with people who use assistive technology stay m
 
 ## License
 
-MIT
+[MIT](LICENSE)
