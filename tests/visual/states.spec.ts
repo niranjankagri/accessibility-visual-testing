@@ -20,6 +20,11 @@ test('booking form with every error shown', async ({ page }) => {
 });
 
 test('booking confirmation, with the random reference number masked', async ({ page }) => {
+  // The mask hides the digits but not their width: digits differ in width in this font, so a random number
+  // moved the rest of the line by a pixel or two. A fixed Math.random gives the same number every run.
+  await page.addInitScript(() => {
+    Math.random = () => 0.5;
+  });
   const booking = await new BookingPage(page).open();
   await booking.book(NURSE_BY_VIDEO);
   await expect(booking.confirmation).toBeFocused();
