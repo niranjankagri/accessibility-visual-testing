@@ -162,6 +162,8 @@ Playwright image. Each job writes the scan summary into the job summary and uplo
 expected, actual and diff images when a screenshot changed. The JUnit XML goes into its own artifacts
 (`junit-a11y-chromium`, `junit-a11y-firefox`, `junit-visual`), which [Automation Coverage & Quality Intelligence](https://github.com/niranjankagri/automation-coverage-quality-intelligence) collects.
 
+CI also runs every Thursday at 22:30 UTC without a code change, so a broken dependency or a change outside the repository shows up within a week. Dependabot proposes dependency and GitHub Actions updates once a month (minor and patch updates grouped, major versions as separate pull requests).
+
 `main` is protected by a ruleset: every change goes through a pull request, and the CI jobs above must pass before it is merged.
 
 ## What automation does not replace
