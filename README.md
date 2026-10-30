@@ -35,6 +35,11 @@ with planted defects, and pages that render the same pixels on every run.
 **86 Playwright tests** (accessibility in Chromium and Firefox, visual, defects) and **28 unit tests** (`node:test`)
 for the exception rules and the app's defect catalogue.
 
+Every test starts with its case ID (`[TC-114] skip link is the first stop ...`), and every case is written
+out for a manual run with axe DevTools, the keyboard, zoom and the approved screenshots in
+**[docs/manual-test-cases.md](docs/manual-test-cases.md)**: WCAG scans TC-101 to TC-108, keyboard TC-109 to
+TC-118, layout TC-119 to TC-124, visual TC-125 to TC-133.
+
 ## Proof: every planted defect is caught
 
 | Planted defect (`app/defects.ts`)                                | Who it hurts                          | Caught by                                   |

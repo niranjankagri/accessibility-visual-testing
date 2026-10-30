@@ -12,14 +12,14 @@ onlyWhereBaselinesAreRendered();
 
 test.use({ viewport: VIEWPORTS.desktop });
 
-test('booking form with every error shown', async ({ page }) => {
+test('[TC-129] booking form with every error shown', async ({ page }) => {
   const booking = await new BookingPage(page).open();
   await booking.submitEmpty();
   await expect(booking.errorSummary).toBeFocused();
   await expectPageScreenshot(page, 'book-errors');
 });
 
-test('booking confirmation, with the random reference number masked', async ({ page }) => {
+test('[TC-130] booking confirmation, with the random reference number masked', async ({ page }) => {
   // The mask hides the digits but not their width: digits differ in width in this font, so a random number
   // moved the rest of the line by a pixel or two. A fixed Math.random gives the same number every run.
   await page.addInitScript(() => {
@@ -31,13 +31,13 @@ test('booking confirmation, with the random reference number masked', async ({ p
   await expectPageScreenshot(page, 'book-confirmation', { mask: [booking.reference] });
 });
 
-test('cancel dialog open over the appointments', async ({ page }) => {
+test('[TC-131] cancel dialog open over the appointments', async ({ page }) => {
   const appointments = await new AppointmentsPage(page).open();
   await appointments.openCancelDialog('19 November');
   await expect(page).toHaveScreenshot('appointments-dialog.png');
 });
 
-test('focus ring on the main button', async ({ page }) => {
+test('[TC-132] focus ring on the main button', async ({ page }) => {
   const home = await new HomePage(page).open();
   const button = home.bookVisitButton;
   await button.focus(); // a script focus still counts as keyboard focus for :focus-visible on links
@@ -50,7 +50,7 @@ test('focus ring on the main button', async ({ page }) => {
   });
 });
 
-test('secondary button on hover', async ({ page }) => {
+test('[TC-133] secondary button on hover', async ({ page }) => {
   const appointments = await new AppointmentsPage(page).open();
   const button = appointments.cancelButton('12 November');
   await button.hover();

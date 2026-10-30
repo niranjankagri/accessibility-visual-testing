@@ -21,14 +21,24 @@ const HEADER_STOPS = ['Skip to main content', 'CityCare Clinic', 'Home', 'Book a
 /** And ends with: footer link, chat badge. */
 const FOOTER_STOPS = ['Accessibility statement', 'Chat with us'];
 
-test('home page tab order follows the visual order', async ({ page }) => {
+test('[TC-109] home page tab order follows the visual order', async ({ page }) => {
   await new HomePage(page).open();
   const stops = await tabThrough(page);
   expect(tabOrderFindings(stops, [...HEADER_STOPS, 'Book a visit', ...FOOTER_STOPS])).toEqual([]);
 });
 
+/** Test case ID of each page's focus check (docs/manual-test-cases.md). */
+const FOCUS_IDS: Record<string, string> = {
+  home: 'TC-110',
+  book: 'TC-111',
+  appointments: 'TC-112',
+  accessibility: 'TC-113',
+};
+
 for (const sitePage of ALL_PAGES) {
-  test(`${sitePage.name} page shows where focus is on every tab stop`, async ({ page }) => {
+  test(`[${FOCUS_IDS[sitePage.name]}] ${sitePage.name} page shows where focus is on every tab stop`, async ({
+    page,
+  }) => {
     await sitePage.create(page).open();
     const stops = await tabThrough(page);
     expect(stops.length).toBeGreaterThanOrEqual(HEADER_STOPS.length + FOOTER_STOPS.length);
@@ -36,7 +46,7 @@ for (const sitePage of ALL_PAGES) {
   });
 }
 
-test('skip link is the first stop, becomes visible and jumps to the main content', async ({ page }) => {
+test('[TC-114] skip link is the first stop, becomes visible and jumps to the main content', async ({ page }) => {
   const booking = await new BookingPage(page).open();
   await page.keyboard.press('Tab');
   await expect(booking.skipLink).toBeFocused();
@@ -49,7 +59,7 @@ test('skip link is the first stop, becomes visible and jumps to the main content
   expect((await focused(page))?.name).toBe('Full name');
 });
 
-test('failed booking moves focus to the error summary and links each error to its field', async ({ page }) => {
+test('[TC-115] failed booking moves focus to the error summary and links each error to its field', async ({ page }) => {
   const booking = await new BookingPage(page).open();
   expect(await errorSummaryFindings(booking)).toEqual([]);
 
@@ -68,7 +78,7 @@ test('failed booking moves focus to the error summary and links each error to it
   await expect(booking.service).toBeFocused();
 });
 
-test('booking form can be completed with the keyboard alone', async ({ page }) => {
+test('[TC-116] booking form can be completed with the keyboard alone', async ({ page }) => {
   const booking = await new BookingPage(page).open();
   await booking.bookWithKeyboard(PHYSIO_IN_PERSON);
 
@@ -76,13 +86,13 @@ test('booking form can be completed with the keyboard alone', async ({ page }) =
   await expect(booking.confirmation).toContainText(/Your reference number is CC-\d{6}/);
 });
 
-test('cancel dialog keeps focus inside, closes with Escape and returns focus', async ({ page }) => {
+test('[TC-117] cancel dialog keeps focus inside, closes with Escape and returns focus', async ({ page }) => {
   const appointments = await new AppointmentsPage(page).open();
   const findings = await dialogFindings(page, appointments.cancelButton('19 November'), appointments.cancelDialog.root);
   expect(findings).toEqual([]);
 });
 
-test('cancelling an appointment announces it and moves focus to the page heading', async ({ page }) => {
+test('[TC-118] cancelling an appointment announces it and moves focus to the page heading', async ({ page }) => {
   const appointments = await new AppointmentsPage(page).open();
   await appointments.cancelWithKeyboard('12 November');
 
