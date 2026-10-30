@@ -13,12 +13,20 @@ import { ALL_PAGES } from '../pages/site.ts';
 import { EXCEPTIONS, scan } from '../support/axe.ts';
 import { unused, type Excused } from '../support/exceptions.ts';
 
+/** Test case ID of each page's scan (docs/manual-test-cases.md); light and dark mode are its two data sets. */
+const SCAN_IDS: Record<string, string> = {
+  home: 'TC-101',
+  book: 'TC-102',
+  appointments: 'TC-103',
+  accessibility: 'TC-104',
+};
+
 for (const colorScheme of ['light', 'dark'] as const) {
   test.describe(`${colorScheme} mode`, () => {
     test.use({ colorScheme });
 
     for (const sitePage of ALL_PAGES) {
-      test(`${sitePage.name} page has no WCAG violations`, async ({ page }, testInfo) => {
+      test(`[${SCAN_IDS[sitePage.name]}] ${sitePage.name} page has no WCAG violations`, async ({ page }, testInfo) => {
         await sitePage.create(page).open();
         const result = await scan(page, testInfo, { label: `${sitePage.name} ${colorScheme}` });
         expect(result.blocking.map((b) => b.message)).toEqual([]);
@@ -27,7 +35,7 @@ for (const colorScheme of ['light', 'dark'] as const) {
   });
 }
 
-test('booking form with errors shown has no WCAG violations', async ({ page }, testInfo) => {
+test('[TC-105] booking form with errors shown has no WCAG violations', async ({ page }, testInfo) => {
   const booking = await new BookingPage(page).open();
   await booking.submitEmpty();
 
@@ -35,7 +43,7 @@ test('booking form with errors shown has no WCAG violations', async ({ page }, t
   expect(result.blocking.map((b) => b.message)).toEqual([]);
 });
 
-test('booking confirmation has no WCAG violations', async ({ page }, testInfo) => {
+test('[TC-106] booking confirmation has no WCAG violations', async ({ page }, testInfo) => {
   const booking = await new BookingPage(page).open();
   await booking.book(NURSE_BY_VIDEO);
 
@@ -43,7 +51,7 @@ test('booking confirmation has no WCAG violations', async ({ page }, testInfo) =
   expect(result.blocking.map((b) => b.message)).toEqual([]);
 });
 
-test('cancel dialog has no WCAG violations', async ({ page }, testInfo) => {
+test('[TC-107] cancel dialog has no WCAG violations', async ({ page }, testInfo) => {
   const appointments = await new AppointmentsPage(page).open();
   await appointments.openCancelDialog('12 November');
 
@@ -51,7 +59,7 @@ test('cancel dialog has no WCAG violations', async ({ page }, testInfo) => {
   expect(result.blocking.map((b) => b.message)).toEqual([]);
 });
 
-test('every accessibility exception is still needed', async ({ page }, testInfo) => {
+test('[TC-108] every accessibility exception is still needed', async ({ page }, testInfo) => {
   // An exception for an issue that no longer exists would hide the issue if it came back: remove it.
   const excused: Excused[] = [];
   for (const sitePage of ALL_PAGES) {
